@@ -1141,10 +1141,10 @@ var FilterWebGLCanvas = (function () {
 /* NodeCopterStream: */
 (function (window, document, undefined) {
     'use strict';
-    var NS,
-        socket,
-        avc,
-        webGLCanvas;
+
+    var socket,
+    avc,
+    webGLCanvas;
 
     function setupAvc() {
         avc = new Avc();
@@ -1186,17 +1186,24 @@ var FilterWebGLCanvas = (function () {
     }
 
 
-    NS = function (div) {
-        setupCanvas(div);
-        setupAvc();
+    var NS = function (div) {
+
+        if(div) setupCanvas(div);
+        if(div) setupAvc();
 
         socket = new WebSocket(
              'ws://' +
             window.document.location.hostname + ':' +
             window.document.location.port + '/dronestream'
         );
+
         socket.binaryType = 'arraybuffer';
         socket.onmessage = handleNalUnits;
+
+        socket.onclose = function(){
+            socket.onmessage = null;
+        }
+
     };
 
     window.NodecopterStream = NS;
